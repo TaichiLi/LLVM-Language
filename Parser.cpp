@@ -23,16 +23,6 @@ int Parser::GetTokPrecedence() {
   return TokPrec;
 }
 
-/// LogError* - These are little helper functions for error handling.
-std::unique_ptr<ExprAST> Parser::LogError(const char *Str) {
-  fprintf(stderr, "Error: %s\n", Str);
-  return nullptr;
-}
-std::unique_ptr<PrototypeAST> Parser::LogErrorP(const char *Str) {
-  LogError(Str);
-  return nullptr;
-}
-
 /// numberexpr ::= number
 std::unique_ptr<ExprAST> Parser::ParseNumberExpr() {
   auto Result = llvm::make_unique<NumberExprAST>(lexer.getNumVal());
@@ -48,7 +38,7 @@ std::unique_ptr<ExprAST> Parser::ParseParenExpr() {
     return nullptr;
 
   if (CurTok != ')')
-    return LogError("expected ')'");
+    return logger.LogError("expected ')'");
   getNextToken(); // eat ).
   return V;
 }
@@ -78,7 +68,7 @@ std::unique_ptr<ExprAST> Parser::ParseIdentifierExpr() {
         break;
 
       if (CurTok != ',')
-        return LogError("Expected ')' or ',' in argument list");
+        return logger.LogError("Expected ')' or ',' in argument list");
       getNextToken();
     }
   }
@@ -96,7 +86,7 @@ std::unique_ptr<ExprAST> Parser::ParseIdentifierExpr() {
 std::unique_ptr<ExprAST> Parser::ParsePrimary() {
   switch (CurTok) {
   default:
-    return LogError("unknown token when expecting an expression");
+    return logger.LogError("unknown token when expecting an expression");
   case tok_identifier:
     return ParseIdentifierExpr();
   case tok_number:
@@ -157,19 +147,19 @@ std::unique_ptr<ExprAST> Parser::ParseExpression() {
 ///   ::= id '(' id* ')'
 std::unique_ptr<PrototypeAST> Parser::ParsePrototype() {
   if (CurTok != tok_identifier)
-    return LogErrorP("Expected function name in prototype");
+    return logger.LogErrorP("Expected function name in prototype");
 
   std::string FnName = lexer.getIdentifierStr();
   getNextToken();
 
   if (CurTok != '(')
-    return LogErrorP("Expected '(' in prototype");
+    return logger.LogErrorP("Expected '(' in prototype");
 
   std::vector<std::string> ArgNames;
   while (getNextToken() == tok_identifier)
     ArgNames.push_back(lexer.getIdentifierStr());
   if (CurTok != ')')
-    return LogErrorP("Expected ')' in prototype");
+    return logger.LogErrorP("Expected ')' in prototype");
 
   // success.
   getNextToken(); // eat ')'.
@@ -204,59 +194,4 @@ std::unique_ptr<FunctionAST> Parser::ParseTopLevelExpr() {
 std::unique_ptr<PrototypeAST> Parser::ParseExtern() {
   getNextToken(); // eat extern.
   return ParsePrototype();
-}
-
-//===----------------------------------------------------------------------===//
-// Top-Level parsing
-//===----------------------------------------------------------------------===//
-
-void Parser::HandleDefinition() {
-  if (ParseDefinition()) {
-    fprintf(stderr, "Parsed a function definition.\n");
-  } else {
-    // Skip token for error recovery.
-    getNextToken();
-  }
-}
-
-void Parser::HandleExtern() {
-  if (ParseExtern()) {
-    fprintf(stderr, "Parsed an extern\n");
-  } else {
-    // Skip token for error recovery.
-    getNextToken();
-  }
-}
-
-void Parser::HandleTopLevelExpression() {
-  // Evaluate a top-level expression into an anonymous function.
-  if (ParseTopLevelExpr()) {
-    fprintf(stderr, "Parsed a top-level expr\n");
-  } else {
-    // Skip token for error recovery.
-    getNextToken();
-  }
-}
-
-/// top ::= definition | external | expression | ';'
-void Parser::MainLoop() {
-  while (true) {
-    fprintf(stderr, "ready> ");
-    switch (CurTok) {
-    case tok_eof:
-      return;
-    case ';': // ignore top-level semicolons.
-      getNextToken();
-      break;
-    case tok_def:
-      HandleDefinition();
-      break;
-    case tok_extern:
-      HandleExtern();
-      break;
-    default:
-      HandleTopLevelExpression();
-      break;
-    }
-  }
 }

@@ -2,24 +2,23 @@
 // Main driver code.
 //===----------------------------------------------------------------------===//
 
-#include "Parser.h"
-#include "Lexer.h"
+#include "Handler.h"
 
 int main() {
   // Install standard binary operators.
   // 1 is lowest precedence.
-  Parser parser;
-  parser.setBinopPrecedence('<', 10);
-  parser.setBinopPrecedence('+', 20);
-  parser.setBinopPrecedence('-', 20);
-  parser.setBinopPrecedence('*', 40); // highest.
+  Handler handler = Handler();
+  handler.getParser()->setBinopPrecedence('<', 10);
+  handler.getParser()->setBinopPrecedence('+', 20);
+  handler.getParser()->setBinopPrecedence('-', 20);
+  handler.getParser()->setBinopPrecedence('*', 40); // highest.
 
   // Prime the first token.
   fprintf(stderr, "ready> ");
-  parser.getNextToken();
+  handler.getParser()->getNextToken();
 
   // Run the main "interpreter loop" now.
-  parser.MainLoop();
+  handler.MainLoop();
 
   return 0;
 }

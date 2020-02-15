@@ -6,9 +6,8 @@
 #include <cctype>
 #include <string>
 
-int Lexer::gettok()
-{
-    int LastChar = ' ';
+int Lexer::gettok() {
+  static int LastChar = ' ';
 
   // Skip any whitespace.
   while (isspace(LastChar))

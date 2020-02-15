@@ -20,6 +20,28 @@
 
 A new language and a compiler with LLVM, follow the tutorial “My First Language Frontend with LLVM”.
 
+## Build
+
+### v1.0
+
+#### Windows(Powershell)
+
+```
+clang++ -g -O3 Lexer.cpp Parser.cpp Handler.cpp main.cpp $($(llvm-config --cxxflags).split()) -o toy.exe
+```
+#### Linux
+
+
+```
+clang++ -g -O3 Lexer.cpp Parser.cpp Handler.cpp main.cpp 'llvm-config --cxxflags' -o toy.exe
+```
+
+## Change Log
+
+### v1.0 (2020-02-15)
+
+Support for recursive descent parsing and operator precedence parsing.
+
 ## Contributors
 
 - [My First Language Frontend with LLVM Tutorial](http://llvm.org/docs/tutorial/MyFirstLanguageFrontend/index.html)

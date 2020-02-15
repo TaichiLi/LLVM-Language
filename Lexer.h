@@ -1,6 +1,7 @@
 //===----------------------------------------------------------------------===//
 // Lexer
 //===----------------------------------------------------------------------===//
+
 #ifndef LEXER_H
 #define LEXER_H
 
@@ -25,6 +26,7 @@ class Lexer
 private:
     std::string IdentifierStr; // Filled in if tok_identifier
     double NumVal;             // Filled in if tok_number
+    
 public:
     std::string getIdentifierStr() { return IdentifierStr; }
     double getNumVal() { return NumVal; }
