@@ -17,11 +17,11 @@ Handler::Handler() {
 
 void Handler::InitializeModuleAndPassManager() {
   // Open a new module.
-  TheModule = std::make_unique<Module>("my cool jit", TheContext);
+  TheModule = llvm::make_unique<Module>("my cool jit", TheContext);
   TheModule->setDataLayout(TheJIT->getTargetMachine().createDataLayout());
 
   // Create a new pass manager attached to it.
-  TheFPM = std::make_unique<legacy::FunctionPassManager>(TheModule.get());
+  TheFPM = llvm::make_unique<legacy::FunctionPassManager>(TheModule.get());
 
   // Do simple "peephole" optimizations and bit-twiddling optzns.
   TheFPM->add(createInstructionCombiningPass());

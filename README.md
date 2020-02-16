@@ -113,6 +113,19 @@ __Note:__
     ```
     you can see the [answer](https://stackoverflow.com/questions/59561710/llvm-kaleidoscope-tutorial-jit-compilation-problem) on stackoverflow, and add `llvm-config` option `orcjit`.
 
+### v4.0
+
+#### Windows(Powershell)
+
+```
+clang++ -g -O3 Lexer.cpp Parser.cpp Logger.cpp Handler.cpp main.cpp $($(llvm-config --cxxflags --ldflags --system-libs --libs core mcjit native orcjit).split()) -lpthread -o toy.exe
+```
+#### Linux
+
+```
+clang++ -g -O3 Lexer.cpp Parser.cpp Logger.cpp Handler.cpp main.cpp `llvm-config --cxxflags --ldflags --system-libs --libs core mcjit native orcjit` -std=c++14 -lpthread -o toy.exe
+```
+
 ## Change Log
 
 ### v1.0 (2020-02-15)
@@ -126,6 +139,10 @@ Support for generating LLVM IR.
 ### v3.0 (2020-02-16)
 
 Add JIT support.
+
+### v4.0 (2020-02-16)
+
+Add control flow operations (‘if’ statement and a ‘for’ loop) support.
 
 ## Contributors
 
