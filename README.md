@@ -31,9 +31,22 @@ clang++ -g -O3 Lexer.cpp Parser.cpp Handler.cpp main.cpp $($(llvm-config --cxxfl
 ```
 #### Linux
 
-
 ```
 clang++ -g -O3 Lexer.cpp Parser.cpp Handler.cpp main.cpp 'llvm-config --cxxflags' -o toy.exe
+```
+
+### v2.0
+
+
+#### Windows(Powershell)
+
+```
+clang++ -g -O3 Lexer.cpp Parser.cpp Logger.cpp Handler.cpp main.cpp $($(llvm-config --cxxflags --ldflags --system-libs --libs core).split()) -lpthread -o toy.exe
+```
+#### Linux
+
+```
+clang++ -g -O3 Lexer.cpp Parser.cpp Logger.cpp Handler.cpp main.cpp 'llvm-config --cxxflags --ldflags --system-libs --libs core' -lpthread -o toy.exe
 ```
 
 ## Change Log
@@ -41,6 +54,10 @@ clang++ -g -O3 Lexer.cpp Parser.cpp Handler.cpp main.cpp 'llvm-config --cxxflags
 ### v1.0 (2020-02-15)
 
 Support for recursive descent parsing and operator precedence parsing.
+
+### v2.0 (2020-02-16)
+
+Support for generating LLVM IR.
 
 ## Contributors
 

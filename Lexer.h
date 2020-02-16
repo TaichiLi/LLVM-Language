@@ -1,7 +1,6 @@
 //===----------------------------------------------------------------------===//
 // Lexer
 //===----------------------------------------------------------------------===//
-
 #ifndef LEXER_H
 #define LEXER_H
 
@@ -28,9 +27,9 @@ private:
     double NumVal;             // Filled in if tok_number
     
 public:
-    std::string getIdentifierStr() { return IdentifierStr; }
-    double getNumVal() { return NumVal; }
-    int gettok();
+  std::string getIdentifierStr() { return IdentifierStr; }
+  double getNumVal() { return NumVal; }
+  int gettok();
 };
 
 #endif

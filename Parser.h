@@ -21,14 +21,14 @@ private:
     Logger logger;
     int CurTok;
 
-    /// BinopPrecedence - This holds the precedence for each binary operator that is
-    /// defined.
+/// BinopPrecedence - This holds the precedence for each binary operator that is
+/// defined.
     std::map<char, int> BinopPrecedence;
     
 public:
     int getCurTok() { return CurTok; }
     std::map<char, int> getBinopPrecedence() { return BinopPrecedence; }
-    void setBinopPrecedence(char key, int value) { BinopPrecedence[key] = value; }
+    void setBinopPrecedence(const char key, int value) { BinopPrecedence[key] = value; }
     int getNextToken() { return CurTok = lexer.gettok(); }
     int GetTokPrecedence();
     std::unique_ptr<ExprAST> ParseExpression();

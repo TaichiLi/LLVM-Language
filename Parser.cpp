@@ -5,6 +5,7 @@
 #include "Lexer.h"
 #include "AST.h"
 #include "Parser.h"
+#include "Logger.h"
 #include "llvm/ADT/STLExtras.h"
 #include <map>
 #include <string>

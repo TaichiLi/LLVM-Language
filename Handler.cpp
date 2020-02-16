@@ -1,19 +1,22 @@
 //===----------------------------------------------------------------------===//
-// Top-Level parsing
+// Top-Level parsing and JIT Driver
 //===----------------------------------------------------------------------===//
 
 #include "Handler.h"
 #include "Parser.h"
 #include <cstdio>
 
-Handler::Handler()
-{
+Handler::Handler() {
   parser = new Parser();
 }
 
 void Handler::HandleDefinition() {
-  if (parser->ParseDefinition()) {
-    fprintf(stderr, "Parsed a function definition.\n");
+if (auto FnAST = parser->ParseDefinition()) {
+    if (auto *FnIR = FnAST->codegen()) {
+      fprintf(stderr, "Read function definition:");
+      FnIR->print(errs());
+      fprintf(stderr, "\n");
+    }
   } else {
     // Skip token for error recovery.
     parser->getNextToken();
@@ -21,8 +24,12 @@ void Handler::HandleDefinition() {
 }
 
 void Handler::HandleExtern() {
-  if (parser->ParseExtern()) {
-    fprintf(stderr, "Parsed an extern\n");
+if (auto ProtoAST = parser->ParseExtern()) {
+    if (auto *FnIR = ProtoAST->codegen()) {
+      fprintf(stderr, "Read extern: ");
+      FnIR->print(errs());
+      fprintf(stderr, "\n");
+    }
   } else {
     // Skip token for error recovery.
     parser->getNextToken();
@@ -31,8 +38,12 @@ void Handler::HandleExtern() {
 
 void Handler::HandleTopLevelExpression() {
   // Evaluate a top-level expression into an anonymous function.
-  if (parser->ParseTopLevelExpr()) {
-    fprintf(stderr, "Parsed a top-level expr\n");
+  if (auto FnAST = parser->ParseTopLevelExpr()) {
+    if (auto *FnIR = FnAST->codegen()) {
+      fprintf(stderr, "Read top-level expression:");
+      FnIR->print(errs());
+      fprintf(stderr, "\n");
+    }
   } else {
     // Skip token for error recovery.
     parser->getNextToken();
