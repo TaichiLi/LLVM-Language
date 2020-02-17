@@ -28,7 +28,10 @@ enum Token {
 
   // operators
   tok_binary = -11,
-  tok_unary = -12
+  tok_unary = -12,
+
+  // var definition
+  tok_var = -13
 };
 
 class Lexer

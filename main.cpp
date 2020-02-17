@@ -36,7 +36,7 @@ int main() {
   InitializeNativeTargetAsmParser();
   // Install standard binary operators.
   // 1 is lowest precedence.
-  Handler handler = Handler();
+  BinopPrecedence['='] = 2;
   BinopPrecedence['<'] = 10;
   BinopPrecedence['+'] = 20;
   BinopPrecedence['-'] = 20;
@@ -44,6 +44,7 @@ int main() {
 
   // Prime the first token.
   fprintf(stderr, "ready> ");
+  Handler handler = Handler();
   handler.getParser()->getNextToken();
 
   TheJIT = llvm::make_unique<KaleidoscopeJIT>();
