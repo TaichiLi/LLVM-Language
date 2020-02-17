@@ -152,6 +152,19 @@ clang++ -g -O3 Lexer.cpp Parser.cpp Logger.cpp Handler.cpp AST.cpp main.cpp $($(
 clang++ -g -O3 Lexer.cpp Parser.cpp Logger.cpp Handler.cpp AST.cpp main.cpp `llvm-config --cxxflags --ldflags --system-libs --libs core mcjit native orcjit` -std=c++14 -lpthread -o toy.exe
 ```
 
+### v7.0
+
+#### Windows(Powershell)
+
+```
+clang++ -g -O3 Lexer.cpp Parser.cpp Logger.cpp Handler.cpp AST.cpp main.cpp $($(llvm-config --cxxflags --ldflags --system-libs --libs all).split()) -lpthread -o toy.exe
+```
+#### Linux
+
+```
+clang++ -g -O3 Lexer.cpp Parser.cpp Logger.cpp Handler.cpp AST.cpp main.cpp `llvm-config --cxxflags --ldflags --system-libs --libs all` -std=c++14 -lpthread -o toy.exe
+```
+
 ## Change Log
 
 ### v1.0 (2020-02-15)
@@ -179,6 +192,10 @@ Add `AST.cpp`, and adjust project file structure.
 ### v6.0 (2020-02-17)
 
 Support for user-defined local variables.
+
+### v7.0 (2020-02-17)
+
+Support for compiling to object code.
 
 ## Contributors
 
