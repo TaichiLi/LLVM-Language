@@ -12,6 +12,8 @@
 #include <memory>
 #include <vector>
 
+std::map<char, int> BinopPrecedence;
+
 /// GetTokPrecedence - Get the precedence of the pending binary operator token.
 int Parser::GetTokPrecedence() {
   if (!isascii(CurTok))
@@ -179,8 +181,24 @@ std::unique_ptr<ExprAST> Parser::ParsePrimary() {
   }
 }
 
+/// unary
+///   ::= primary
+///   ::= '!' unary
+std::unique_ptr<ExprAST> Parser::ParseUnary() {
+  // If the current token is not an operator, it must be a primary expr.
+  if (!isascii(CurTok) || CurTok == '(' || CurTok == ',')
+    return ParsePrimary();
+
+  // If this is a unary operator, read it.
+  int Opc = CurTok;
+  getNextToken();
+  if (auto Operand = ParseUnary())
+    return llvm::make_unique<UnaryExprAST>(Opc, std::move(Operand));
+  return nullptr;
+}
+
 /// binoprhs
-///   ::= ('+' primary)*
+///   ::= ('+' unary)*
 std::unique_ptr<ExprAST> Parser::ParseBinOpRHS(int ExprPrec, std::unique_ptr<ExprAST> LHS) {
   // If this is a binop, find its precedence.
   while (true) {
@@ -195,8 +213,8 @@ std::unique_ptr<ExprAST> Parser::ParseBinOpRHS(int ExprPrec, std::unique_ptr<Exp
     int BinOp = CurTok;
     getNextToken(); // eat binop
 
-    // Parse the primary expression after the binary operator.
-    auto RHS = ParsePrimary();
+    // Parse the unary expression after the binary operator.
+    auto RHS = ParseUnary();
     if (!RHS)
       return nullptr;
 
@@ -216,10 +234,10 @@ std::unique_ptr<ExprAST> Parser::ParseBinOpRHS(int ExprPrec, std::unique_ptr<Exp
 }
 
 /// expression
-///   ::= primary binoprhs
+///   ::= unary binoprhs
 ///
 std::unique_ptr<ExprAST> Parser::ParseExpression() {
-  auto LHS = ParsePrimary();
+  auto LHS = ParseUnary();
   if (!LHS)
     return nullptr;
 
@@ -228,12 +246,49 @@ std::unique_ptr<ExprAST> Parser::ParseExpression() {
 
 /// prototype
 ///   ::= id '(' id* ')'
+///   ::= binary LETTER number? (id, id)
+///   ::= unary LETTER (id)
 std::unique_ptr<PrototypeAST> Parser::ParsePrototype() {
-  if (CurTok != tok_identifier)
-    return logger.LogErrorP("Expected function name in prototype");
+  std::string FnName;
 
-  std::string FnName = lexer.getIdentifierStr();
-  getNextToken();
+  unsigned Kind = 0; // 0 = identifier, 1 = unary, 2 = binary.
+  unsigned BinaryPrecedence = 30;
+
+  switch (getCurTok()) {
+  default:
+    return logger.LogErrorP("Expected function name in prototype");
+  case tok_identifier:
+    FnName = lexer.getIdentifierStr();
+    Kind = 0;
+    getNextToken();
+    break;
+  case tok_unary:
+    getNextToken();
+    if (!isascii(CurTok))
+      return logger.LogErrorP("Expected unary operator");
+    FnName = "unary";
+    FnName += (char)CurTok;
+    Kind = 1;
+    getNextToken();
+    break;
+  case tok_binary:
+    getNextToken();
+    if (!isascii(CurTok))
+      return logger.LogErrorP("Expected binary operator");
+    FnName = "binary";
+    FnName += (char)CurTok;
+    Kind = 2;
+    getNextToken();
+
+    // Read the precedence if present.
+    if (CurTok == tok_number) {
+      if (lexer.getNumVal() < 1 || lexer.getNumVal() > 100)
+        return logger.LogErrorP("Invalid precedence: must be 1..100");
+      BinaryPrecedence = (unsigned)lexer.getNumVal();
+      getNextToken();
+    }
+    break;
+  }
 
   if (CurTok != '(')
     return logger.LogErrorP("Expected '(' in prototype");
@@ -247,7 +302,12 @@ std::unique_ptr<PrototypeAST> Parser::ParsePrototype() {
   // success.
   getNextToken(); // eat ')'.
 
-  return llvm::make_unique<PrototypeAST>(FnName, std::move(ArgNames));
+  // Verify right number of names for operator.
+  if (Kind && ArgNames.size() != Kind)
+    return logger.LogErrorP("Invalid number of operands for operator");
+
+  return llvm::make_unique<PrototypeAST>(FnName, ArgNames, Kind != 0,
+                                         BinaryPrecedence);
 }
 
 /// definition ::= 'def' prototype expression

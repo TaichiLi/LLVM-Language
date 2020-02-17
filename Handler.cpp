@@ -4,6 +4,7 @@
 
 #include "Handler.h"
 #include "Parser.h"
+#include "AST.h"
 
 LLVMContext TheContext;
 std::unique_ptr<Module> TheModule;

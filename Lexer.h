@@ -24,7 +24,11 @@ enum Token {
   tok_then = -7,
   tok_else = -8,
   tok_for = -9,
-  tok_in = -10
+  tok_in = -10,
+
+  // operators
+  tok_binary = -11,
+  tok_unary = -12
 };
 
 class Lexer

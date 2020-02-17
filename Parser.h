@@ -11,6 +11,10 @@
 #include <memory>
 #include <map>
 
+/// BinopPrecedence - This holds the precedence for each binary operator that is
+/// defined.
+extern std::map<char, int> BinopPrecedence;
+
 class Parser
 {
 private:
@@ -20,15 +24,9 @@ private:
     Lexer lexer;
     Logger logger;
     int CurTok;
-
-/// BinopPrecedence - This holds the precedence for each binary operator that is
-/// defined.
-    std::map<char, int> BinopPrecedence;
     
 public:
     int getCurTok() { return CurTok; }
-    std::map<char, int> getBinopPrecedence() { return BinopPrecedence; }
-    void setBinopPrecedence(const char key, int value) { BinopPrecedence[key] = value; }
     int getNextToken() { return CurTok = lexer.gettok(); }
     int GetTokPrecedence();
     std::unique_ptr<ExprAST> ParseExpression();
@@ -38,6 +36,7 @@ public:
     std::unique_ptr<ExprAST> ParseIfExpr();
     std::unique_ptr<ExprAST> ParseForExpr();
     std::unique_ptr<ExprAST> ParsePrimary();
+    std::unique_ptr<ExprAST> ParseUnary();
     std::unique_ptr<ExprAST> ParseBinOpRHS(int ExprPrec, std::unique_ptr<ExprAST> LHS);
     std::unique_ptr<PrototypeAST> ParsePrototype();
     std::unique_ptr<FunctionAST> ParseDefinition();
