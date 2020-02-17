@@ -52,7 +52,7 @@ void Handler::HandleTopLevelExpression() {
     FnAST->codegen();
   } else {
     // Skip token for error recovery.
-    getParser()->getNextToken();
+    parser->getNextToken();
   }
 }
 
