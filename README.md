@@ -20,6 +20,16 @@
 
 A new language and a compiler with LLVM, follow the tutorial “My First Language Frontend with LLVM”.
 
+## File Structure
+
+- `main.cpp`  - Driver of project
+- `Lexer.cpp` - Lexical analyzer
+- `Parser.cpp` - Syntactic analyzer
+- `Handler.cpp` - Top-Level parsing and JIT Driver
+- `AST.cpp` - Abstract Syntax Tree (aka Parse Tree)
+- `Logger.cpp` - Logger
+- `KaleidoscopeJIT.h`  A simple JIT for Kaleidoscope
+
 ## Environment
 
 ### LLVM
@@ -30,12 +40,18 @@ Target: x86_64-w64-windows-gnu
 Thread model: posix
 ```
 
-### Clang
+### Clang or MinGW-w64
 
 ```
 clang version 9.0.0 (tags/RELEASE_900/final)
 Target: x86_64-w64-windows-gnu
 Thread model: posix
+```
+
+```
+Target: x86_64-w64-mingw32
+Thread model: posix
+gcc version 8.1.0 (x86_64-posix-sjlj-rev0, Built by MinGW-W64 project)
 ```
 
 ## Build
@@ -164,6 +180,15 @@ clang++ -g -O3 Lexer.cpp Parser.cpp Logger.cpp Handler.cpp AST.cpp main.cpp $($(
 ```
 clang++ -g -O3 Lexer.cpp Parser.cpp Logger.cpp Handler.cpp AST.cpp main.cpp `llvm-config --cxxflags --ldflags --system-libs --libs all` -std=c++14 -lpthread -o toy.exe
 ```
+
+__Note:__ 
+
+- If you get
+  ```
+  terminate called after throwing an instance of 'std::logic_error'
+  what():  basic_string::_M_construct null not valid
+  ```
+  when running the program. The error may be due to the `Clang++`, so you switch to `g++`.
 
 ## Change Log
 
