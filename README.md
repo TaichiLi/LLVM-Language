@@ -226,3 +226,6 @@ Support for compiling to object code.
 
 - [My First Language Frontend with LLVM Tutorial](http://llvm.org/docs/tutorial/MyFirstLanguageFrontend/index.html)
 - [@Li Taiji](https://github.com/TaichiLi)
+
+__NOTICE:__
+This project USES [`KaleidoscopeJIT.h`](https://github.com/llvm-mirror/llvm/blob/master/examples/Kaleidoscope/include/KaleidoscopeJIT.h) and MODIFIES [`toy.cpp`](https://github.com/llvm-mirror/llvm/tree/master/examples/Kaleidoscope).
